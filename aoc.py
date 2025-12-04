@@ -46,6 +46,9 @@ def get_matrix(day, year=YEAR, session_cookie=SESSION_COOKIE, dtype=None):
     lines = get_lines(day, year, session_cookie)
     return lines2matrix(lines)
 
+def input2matrix(string, dtype=None):
+    return lines2matrix(string.split('\n'), dtype=dtype)
+
 def lines2matrix(lines, dtype=None):
     return np.array([list(line) for line in lines], dtype=dtype)
 
