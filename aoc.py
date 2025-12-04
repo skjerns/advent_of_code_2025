@@ -2,7 +2,7 @@ import requests
 import joblib
 import numpy as np
 
-mem = joblib.Memory('.')
+mem = joblib.Memory('./joblib')
 #%% things that are often used
 
 step = {'^': [-1, 0],
