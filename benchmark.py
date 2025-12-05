@@ -1,8 +1,25 @@
 import glob
+import re
 import subprocess
 import sys
 import time
 from pathlib import Path
+from urllib import request
+
+
+def get_day_title(day):
+    try:
+        with request.urlopen(f"https://adventofcode.com/2025/day/{day}") as response:
+            if response.status != 200:
+                return ""
+            html = response.read().decode("utf-8")
+            match = re.search(r"<h2>--- Day \d+: (.*) ---</h2>", html)
+            if match:
+                return match.group(1).strip()
+    except Exception:
+        return ""
+    return ""
+
 
 def get_cell_code(script_path, part):
     with open(script_path, 'r') as f:
@@ -71,48 +88,54 @@ def main():
     results = {}
     if Path('README.md').exists() and not reset_flag:
         with open('README.md', 'r') as f:
+            # Regex to capture day, part1, and part2 from the markdown table
+            # Supports both old format `| 01 | ...` and new format `| [01 - ...] | ...`
+            pattern = r"\| (?:\[(?P<day1>\d+)[^\]]*\]|(?P<day2>\d+)) \| (?P<part1>[^|]+) \| (?P<part2>[^|]+) \|"
             for line in f:
-                if not line.strip().startswith('|'):
-                    continue
-                parts = [p.strip() for p in line.strip().split('|')]
-                if len(parts) >= 5 and parts[1].isdigit():
-                    day = int(parts[1])
-                    part1_str = parts[2]
-                    part2_str = parts[3]
-                    results[day] = {'part1': part1_str, 'part2': part2_str}
+                match = re.search(pattern, line)
+                if match:
+                    day = int(match.group('day1') or match.group('day2'))
+                    results[day] = {
+                        'part1': match.group('part1').strip(),
+                        'part2': match.group('part2').strip()
+                    }
 
     day_scripts = sorted(glob.glob('day*.py'))
     new_days_benchmarked = False
     for script_path in day_scripts:
         day = int(Path(script_path).stem.replace('day', ''))
 
-        if day in results and not reset_flag:
-            continue
-
-        new_days_benchmarked = True
-        print(f"Benchmarking Day {day:02d}...")
-        part1_time = time_script_part(script_path, 1)
-        part2_time = time_script_part(script_path, 2)
-
-        results[day] = {
-            'part1': format_time(part1_time),
-            'part2': format_time(part2_time)
-        }
+        # If day is not in results, or if reset flag is present, benchmark it
+        if day not in results or reset_flag:
+            new_days_benchmarked = True
+            print(f"Benchmarking Day {day:02d}...")
+            part1_time = time_script_part(script_path, 1)
+            part2_time = time_script_part(script_path, 2)
+            results[day] = {
+                'part1': format_time(part1_time),
+                'part2': format_time(part2_time)
+            }
 
     if not new_days_benchmarked and not reset_flag:
-        print("No new days to benchmark.")
-        return
+        print("No new days to benchmark. Checking for title/format updates.")
 
-    # Generate README.md
+    # Fetch titles and generate new README
+    print("Fetching titles and generating README.md...")
     sorted_days = sorted(results.keys())
     with open('README.md', 'w') as f:
-        f.write('# Advent of Code 2025\n')
-        f.write('# Here are the benchmarks per day\n')
+        f.write('# Advent of Code 2025\n\n')
+        f.write('Benchmark runtimes per day\n\n')
         f.write('| Day | Part 1 | Part 2 |\n')
         f.write('|---|---|---|\n')
         for day in sorted_days:
             result = results[day]
-            f.write(f'| {day:02d} | {result["part1"]} | {result["part2"]} |\n')
+            title = get_day_title(day)
+            day_str = f"{day:02d}"
+            if title:
+                day_str += f" - {title}"
+            
+            script_name = f'day{day:02d}.py'
+            f.write(f'| [{day_str}]({script_name}) | {result["part1"]} | {result["part2"]} |\n')
 
 if __name__ == '__main__':
     main()

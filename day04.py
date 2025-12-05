@@ -5,7 +5,7 @@ Created on Thu Dec  4 06:58:39 2025
 
 @author: simon
 """
-import scipy
+from scipy.signal import convolve2d
 import numpy as np
 from tqdm import tqdm
 from aoc import get_input, get_lines, get_matrix, lines2matrix, input2matrix
@@ -32,7 +32,7 @@ matrix = matrix.astype(int)
 
 #%% part 1
 kernel = np.ones([3, 3])
-convolved = scipy.signal.convolve2d(matrix, kernel, 'same')
+convolved = convolve2d(matrix, kernel, 'same')
 
 # count what is below 5 but over 0, but only for paper coil positions
 accessible = (convolved[matrix.astype(bool)]<5).sum()
@@ -47,7 +47,7 @@ removed = 0
 
 # keep removing until there's nothing left to remove
 while True:
-    x = scipy.signal.convolve2d(matrix, kernel, 'same')
+    x = convolve2d(matrix, kernel, 'same')
 
     # limit convolved to positions of coils
     x[matrix==0] = np.inf
