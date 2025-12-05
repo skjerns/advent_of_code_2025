@@ -47,7 +47,6 @@ print(f'{fresh=}')
 
 #%% part2
 
-
 # merge all ranges
 
 ranges = sorted(ranges, key=lambda x: x.start)
