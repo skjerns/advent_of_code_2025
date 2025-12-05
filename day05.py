@@ -35,7 +35,8 @@ ranges = [range(r[0], r[1]+1) for r in ranges]
 
 ids = [int(x) for x in ids.split('\n')]
 
-#%% part1
+#%% part 1
+
 fresh = 0
 for x in ids:
     if any([x in r for r in ranges]):
@@ -45,7 +46,7 @@ for x in ids:
 print(f'{fresh=}')
 
 
-#%% part2
+#%% part 2
 
 # merge all ranges
 

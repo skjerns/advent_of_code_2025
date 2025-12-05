@@ -72,7 +72,7 @@ for battery in matrix:
         prev_pos = idx[i]
 
     joltage = int(''.join([str(x) for x in battery[idx]]))
-    print(joltage)
+    # print(joltage)
 
     joltages += [joltage]
 
