@@ -11,3 +11,5 @@ Benchmark runtimes per day
 | [05 - Cafeteria](day05.py) | 9ms | 22ms |
 | [06 - Trash Compactor](day06.py) | 3ms | 14ms |
 | [07 - Laboratories](day07.py) | N/A | N/A |
+| [08 - Playground](day08.py) | N/A | N/A |
+| [09 - Movie Theater](day09.py) | N/A | N/A |
