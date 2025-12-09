@@ -111,10 +111,12 @@ def time_script_part(script_path, part):
     )
 
     # Replace the original cell code with the timed version
+
     modified_script = script_code.replace(
         cell_code,
         timing_injection
     )
+    modified_script = f'__file__ = "{script_path}"\n' +  modified_script
 
     # Run the modified script using the python interpreter
     process = subprocess.run(
@@ -124,13 +126,16 @@ def time_script_part(script_path, part):
     )
 
     output = process.stdout
+    if not output:
+        raise Exception(f'error benchmarking {script_path}: {process.stderr}')
     for line in output.split('\n'):
         if line.startswith('--execution-time--'):
             try:
                 ttime = float(line.split('--')[-1])
                 print(f'-- {os.path.basename(script_path)}:{part} - {ttime:.4f}')
                 return ttime
-            except ValueError:
+            except ValueError as e:
+                print(f'error benchmarking {e}')
                 return None
     return None
 

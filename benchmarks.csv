@@ -1,10 +1,10 @@
 Day,Part 1,Part 2
-1,10ms,74ms
+1,3ms,74ms
 2,438ms,10.96s
 3,2ms,64ms
 4,1ms,22ms
 5,9ms,22ms
 6,3ms,14ms
-7,,
-8,,
-9,,~40 min
+7,75ms,9ms
+8,353ms,2.32s
+9,600ms,~40 min
