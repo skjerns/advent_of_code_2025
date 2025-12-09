@@ -28,59 +28,60 @@ coords = [tuple([int(x) for x in coord]) for coord in matrix]
 
 
 #%% part 1
-dists = squareform(pdist(coords))
+with stimer('Part 1'):
+    dists = squareform(pdist(coords))
 
-dists[dists==0] = np.inf
+    dists[dists==0] = np.inf
 
-circuits = [{x} for x in coords]
+    circuits = [{x} for x in coords]
 
-for i in tqdm(range(1000)):
-    # print('')
-    if np.isinf(dists).all():
-        break
-    # get smallest distance
-    x, y = np.unravel_index(np.argmin(dists), dists.shape)
+    for i in tqdm(range(1000)):
+        # print('')
+        if np.isinf(dists).all():
+            break
+        # get smallest distance
+        x, y = np.unravel_index(np.argmin(dists), dists.shape)
 
-    # remove this distances
-    dists[x, y] = np.inf
-    dists[y, x] = np.inf
+        # remove this distances
+        dists[x, y] = np.inf
+        dists[y, x] = np.inf
 
-    # get nodes that we want to connect
-    n1 = coords[x]
-    n2 = coords[y]
+        # get nodes that we want to connect
+        n1 = coords[x]
+        n2 = coords[y]
 
 
-    c1 = None
-    c2 = None
-    # find the circuit in which these two are
-    for i, circ in enumerate(circuits):
-        if n1 in circ:
-            c1 = circ
-        if n2 in circ:
-            c2 = circ
+        c1 = None
+        c2 = None
+        # find the circuit in which these two are
+        for i, circ in enumerate(circuits):
+            if n1 in circ:
+                c1 = circ
+            if n2 in circ:
+                c2 = circ
 
-    if c1==c2:  # nothing to do
-        # print('Nothing to do for {n1} and {n2}!')
+        if c1==c2:  # nothing to do
+            # print('Nothing to do for {n1} and {n2}!')
+            # print(f'{circuits=}')
+            # print('\n', len(circuits))
+            continue
+
+        # merge the two
+        c3 = c1.union(c2)
+
+        circuits.remove(c1)
+        circuits.remove(c2)
+        circuits += [c3]
+        # print(f'connect {n1} and {n2}')
         # print(f'{circuits=}')
-        # print('\n', len(circuits))
+        # print(len(circuits))
         continue
 
-    # merge the two
-    c3 = c1.union(c2)
 
-    circuits.remove(c1)
-    circuits.remove(c2)
-    circuits += [c3]
-    # print(f'connect {n1} and {n2}')
-    # print(f'{circuits=}')
-    # print(len(circuits))
-    continue
+    lens = sorted([len(x) for x in circuits])
+    print(f'{lens=}')
 
-
-lens = sorted([len(x) for x in circuits])
-print(f'{lens=}')
-
-print(f'product of largest three = {np.prod(lens[-3:])}')
+    print(f'product of largest three = {np.prod(lens[-3:])}')
 
 #%% part 2
 
